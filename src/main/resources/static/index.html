@@ -11,9 +11,9 @@
     <script>
         async function callBackend() {
             try {
-                const response = await fetch('api/hello');
+                const response = await fetch('/api/hello');
                 const data = await response.json();
-                document.getElementById('result').innerHTML = data.innerHTML;
+                document.getElementById('result').innerHTML = data.hello;
             } catch (error) {
                 console.error('Error:', error)
             }
