@@ -1,4 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <title>Piero's Pizzeria</title>
+</head>
+<body>
     <h1>Piero's Pizzeria</h1>
+    <button onclick="callBackend()">Get data from Java</button>
+    <div id="result"></div>
+
+    <script>
+        async function callBackend() {
+            try {
+                const response = await fetch('api/hello');
+                const data = await response.json();
+                document.getElementById('result').innerHTML = data.innerHTML;
+            } catch (error) {
+                console.error('Error:', error)
+            }
+        }
+    </script>
+</body>
 </html>
