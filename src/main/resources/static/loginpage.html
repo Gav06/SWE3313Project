@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Piero's Pizzeria - Login</title>
+    <script>
+        async function handleLogin(event) {
+          event.preventDefault();
+          const username = document.getElementById('username').value;
+          const password = document.getElementById('password').value;
+
+          if (!username || !password) {
+            showError("Enter Username/Password");
+            return;
+          }
+
+          try {
+            const response = await fetch('/api/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+              window.location.href = 'menu/pizza.html';
+            } else {
+              showError("Incorrect Username/Password. Try Again!");
+            }
+          } catch (error) {
+            showError("LOGIN UNAVAILABLE. TRY AGAIN IN 1 MINUTE");
+            console.error(error);
+          }
+        }
+
+        function showError(message) {
+          const errorDiv = document.getElementById('error');
+          errorDiv.textContent = message;
+          errorDiv.style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+<header>
+    <h1>Welcome to Piero's Pizzeria</h1>
+</header>
+
+<main>
+    <form onsubmit="handleLogin(event)">
+        <p>Don’t Have an Account? <a href="signup.html">Sign Up</a></p>
+
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username"><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+
+        <button type="submit">LOGIN</button>
+        <button type="button" onclick="window.location.href='index.html'">BACK</button>
+
+        <div id="error" style="color: red; margin-top: 1em; display: none;"></div>
+    </form>
+</main>
+</body>
+</html>
