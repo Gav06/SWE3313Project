@@ -1,11 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Piero's Pizzeria</title>
+    <title>Mom and Pop's Pizzeria</title>
+    <title>Mom and Pop's Pizzeria</title>
 </head>
+<style>
+.titleDiv {
+  border: 5px outset red;
+  background-color: white;
+  text-align: center;
+}
+
+.button {
+  left: 30px;
+  border: 2px outset red;
+  color: black;
+  padding: 25px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 32px;
+  margin: auto;
+  width: 50%;
+  cursor: pointer;
+}
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.button1 {background-color: white;}
+</style>
 <body>
-    <h1>Piero's Pizzeria</h1>
-    <button onclick="callBackend()">Get data from Java</button>
+<div class="titleDiv">
+    <h1 style="text-align: center">Mom and Pop's Pizzeria</h1>
+    <h2 style="text-align: center">Home</h2>
+</div>
+<div class="center">
+    <button class="button button1" onclick="callBackend()" style="transform: translate(50%, 0%)">Order</button>
+    <button class="button button1" onclick="callBackend()" style="transform: translate(50%, 50%)">Settings</button>
+</div>
     <div id="result"></div>
 
     <script>
