@@ -18,6 +18,7 @@
             const response = await fetch('/api/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
+                // fill request with user credentials (remember to change this to a hashed version in the future)
               body: JSON.stringify({ username, password })
             });
 
@@ -39,27 +40,30 @@
           errorDiv.style.display = 'block';
         }
     </script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
-<body>
-<header>
-    <h1>Welcome to Piero's Pizzeria</h1>
-</header>
+    <body>
+        <header>
+            <div class="titleDiv">
+                <!--Is this supposed to be piero's or "mom and pop's" i still cant remember?-->
+                <h1>Login to Piero's Pizzeria</h1>
+            </div>
+        </header>
+        <main>
+            <form onsubmit="handleLogin(event)">
+                <p>Don’t Have an Account? <a href="signup.html">Sign Up</a></p>
 
-<main>
-    <form onsubmit="handleLogin(event)">
-        <p>Don’t Have an Account? <a href="signup.html">Sign Up</a></p>
+                <label for="username">Username:</label><br>
+                <input type="text" id="username" name="username"><br><br>
 
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username"><br><br>
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password"><br><br>
 
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password"><br><br>
+                <button type="submit">LOGIN</button>
+                <button type="button" onclick="window.location.href='index.html'">BACK</button>
 
-        <button type="submit">LOGIN</button>
-        <button type="button" onclick="window.location.href='index.html'">BACK</button>
-
-        <div id="error" style="color: red; margin-top: 1em; display: none;"></div>
-    </form>
-</main>
-</body>
+                <div id="error" style="color: red; margin-top: 1em; display: none;"></div>
+            </form>
+        </main>
+    </body>
 </html>

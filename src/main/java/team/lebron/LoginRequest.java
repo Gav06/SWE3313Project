@@ -1,6 +1,6 @@
 package team.lebron;
 
-public class loginController {
+public class LoginRequest {
     private String username;
     private String password;
 
@@ -10,17 +10,4 @@ public class loginController {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
-}
-
-public class LoginResponse {
-    private boolean success;
-    private String message;
-
-    public LoginResponse(boolean success, String message) {
-        this.success = success;
-        this.message = message;
-    }
-
-    public boolean isSuccess() { return success; }
-    public String getMessage() { return message; }
 }
