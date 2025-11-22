@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Piero's Pizzeria - Account Settings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .titleDiv {
+            border: 5px outset red;
+            background-color: white;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 0;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background-color: white;
+            border-left: 5px outset red;
+            border-right: 5px outset red;
+            border-bottom: 5px outset red;
+            margin-bottom: 30px;
+        }
+        .button {
+            border: 2px outset red;
+            color: black;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: white;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+        .button:hover {
+            background-color: #f0f0f0;
+        }
+        .settings-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .settings-section {
+            background-color: white;
+            padding: 30px;
+            border: 3px solid red;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .settings-section h2 {
+            color: #d32f2f;
+            margin-top: 0;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-group input[readonly],
+        .form-group textarea[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #d32f2f;
+            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.1);
+        }
+        .error-message {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        .success-message {
+            color: #4caf50;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .success-message.show {
+            display: block;
+        }
+        .save-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .save-btn:hover {
+            background-color: #45a049;
+        }
+        .save-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .password-verify-section {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #ffc107;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="titleDiv">
+        <h1>Piero's Pizzeria</h1>
+        <h2>Account Settings</h2>
+    </div>
+    <div class="nav-buttons">
+        <button class="button" onclick="window.location.href='index.html'">Home</button>
+        <button class="button" onclick="window.location.href='menuMainPage.html'">Menu</button>
+        <button class="button" onclick="window.location.href='cart.html'">Cart</button>
+        <button class="button" id="accountBtn" onclick="window.location.href='accountSettings.html'" style="display: none;">Account Settings</button>
+        <button class="button" id="loginBtn" onclick="window.location.href='loginpage.html'">Login</button>
+    </div>
+    <script src="js/navigation.js"></script>
+    
+    <div class="settings-container">
+        <div id="global-error" class="error-message" style="background-color: #ffebee; padding: 15px; border-radius: 4px; margin-bottom: 20px;"></div>
+        <div id="global-success" class="success-message" style="background-color: #e8f5e9; padding: 15px; border-radius: 4px; margin-bottom: 20px;"></div>
+
+        <div class="settings-section">
+            <h2>Account Information</h2>
+            <div class="password-verify-section">
+                <strong>To make changes, please enter your password:</strong>
+                <div class="form-group" style="margin-top: 10px;">
+                    <input type="password" id="verifyPassword" placeholder="Enter your password">
+                    <div class="error-message" id="verifyPasswordError">Password is required to make changes</div>
+                </div>
+            </div>
+
+            <form id="account-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name (e.g., John Doe)">
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="addressStreet" style="font-size: 14px;">Street Address</label>
+                            <input type="text" id="addressStreet" placeholder="123 Main Street, Apt 4B">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="addressCity" style="font-size: 14px;">City</label>
+                            <input type="text" id="addressCity" placeholder="New York">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="addressState" style="font-size: 14px;">State</label>
+                            <input type="text" id="addressState" placeholder="NY" maxlength="2">
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="addressZip" style="font-size: 14px;">ZIP Code</label>
+                            <input type="text" id="addressZip" placeholder="10001" maxlength="10" style="width: 200px;">
+                        </div>
+                    </div>
+                    <textarea id="address" placeholder="Full address will be generated automatically" readonly></textarea>
+                    <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">The address field above is automatically generated. Fill in the fields above to create your address.</small>
+                </div>
+            </form>
+
+            <button class="save-btn" onclick="updateAccountInfo()">Save Changes</button>
+            <div class="success-message" id="accountSuccess" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="settings-section">
+            <h2>Change Password</h2>
+            <div class="password-verify-section">
+                <strong>Enter your current password to change your password:</strong>
+                <div class="form-group" style="margin-top: 10px;">
+                    <input type="password" id="verifyPasswordForPassword" placeholder="Enter your current password">
+                    <div class="error-message" id="verifyPasswordForPasswordError">Current password is required</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" placeholder="Enter new password">
+                <div class="error-message" id="newPasswordError">Password must be at least 6 characters</div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm New Password</label>
+                <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
+            </div>
+
+            <button class="save-btn" onclick="updatePassword()">Change Password</button>
+            <div class="success-message" id="passwordSuccess" style="margin-top: 10px;"></div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/accountSettings.js"></script>
+</body>
+</html>
+

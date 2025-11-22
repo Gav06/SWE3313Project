@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Piero's Pizzeria - Checkout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .titleDiv {
+            border: 5px outset red;
+            background-color: white;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 0;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background-color: white;
+            border-left: 5px outset red;
+            border-right: 5px outset red;
+            border-bottom: 5px outset red;
+            margin-bottom: 30px;
+        }
+        .button {
+            border: 2px outset red;
+            color: black;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: white;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+        .button:hover {
+            background-color: #f0f0f0;
+        }
+        .checkout-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .checkout-section {
+            background-color: white;
+            padding: 30px;
+            border: 3px solid red;
+            border-radius: 8px;
+        }
+        .checkout-section h2 {
+            color: #d32f2f;
+            margin-top: 0;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checkout-section h2::before {
+            content: "📦";
+            font-size: 24px;
+        }
+        .checkout-section:first-of-type h2::before {
+            content: "💳";
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .form-group label:has(input[type="checkbox"]) {
+            font-weight: normal;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff3cd;
+            border-radius: 4px;
+            border: 1px solid #ffc107;
+            margin-bottom: 15px;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="password"]:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #d32f2f;
+            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.1);
+        }
+        .saved-address-box {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #4caf50;
+        }
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+        }
+        .error-message {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        .checkout-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        .checkout-btn:hover {
+            background-color: #45a049;
+        }
+        .checkout-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .order-summary {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        .order-total {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+        }
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="titleDiv">
+        <h1>Piero's Pizzeria</h1>
+        <h2>Checkout</h2>
+    </div>
+    <div class="nav-buttons">
+        <button class="button" onclick="window.location.href='index.html'">Home</button>
+        <button class="button" onclick="window.location.href='menuMainPage.html'">Menu</button>
+        <button class="button" onclick="window.location.href='cart.html'">Cart</button>
+        <button class="button" id="accountBtn" onclick="window.location.href='accountSettings.html'" style="display: none;">Account Settings</button>
+        <button class="button" id="loginBtn" onclick="window.location.href='loginpage.html'">Login</button>
+    </div>
+    <script src="js/navigation.js"></script>
+    
+    <div class="checkout-container">
+        <div>
+            <div class="checkout-section">
+                <h2>Payment Information</h2>
+                <form id="checkout-form">
+                    <div class="form-group">
+                        <label for="cardType">Card Type *</label>
+                        <select id="cardType" required>
+                            <option value="">Select card type</option>
+                            <option value="Visa">Visa</option>
+                            <option value="Mastercard">Mastercard</option>
+                            <option value="American Express">American Express</option>
+                            <option value="Discover">Discover</option>
+                        </select>
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                            Any card type works for testing
+                        </small>
+                        <div class="error-message" id="cardTypeError">Please select a card type</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number *</label>
+                            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456"
+                                   maxlength="19" pattern="\d+" required>
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                            Test cards: Visa 4111 1111 1111 1111 | Mastercard 5555 5555 5555 4444
+                        </small>
+                        <div class="error-message" id="cardNumberError">Please enter a valid card number</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cardExpiry">Expiry Date (MM/YY) *</label>
+                            <input type="text" id="cardExpiry" placeholder="12/28" maxlength="5" required>
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                            Use any future date (e.g., 12/28)
+                        </small>
+                        <div class="error-message" id="cardExpiryError">Please enter a valid expiry date</div>
+                    </div>
+
+                        <div class="form-group">
+                            <label for="cardCVV">CVV *</label>
+                            <input type="text" id="cardCVV" placeholder="123" maxlength="4" minlength="3" pattern="\d{3,4}" required>
+                            <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                                <span id="cvv-hint">3 digits for Visa/Mastercard/Discover, 4 digits for American Express</span>
+                            </small>
+                            <div class="error-message" id="cardCVVError">Please enter a valid CVV</div>
+                        </div>
+                </form>
+            </div>
+
+            <div class="checkout-section">
+                <h2>Delivery Address</h2>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="useSavedAddress" onchange="toggleSavedAddress()">
+                        Use saved address from account
+                    </label>
+                </div>
+                
+                <div id="address-fields">
+                    <div class="form-group">
+                        <label for="streetAddress">Street Address *</label>
+                            <input type="text" id="streetAddress" placeholder="123 Main Street, Apt 4B" required>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                                <input type="text" id="city" placeholder="New York" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="state">State *</label>
+                                <input type="text" id="state" placeholder="NY" maxlength="2" minlength="2" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="zipCode">ZIP Code *</label>
+                                <input type="text" id="zipCode" placeholder="10001" pattern="^\d{5}(-\d{4})?$" maxlength="10" minlength="5" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deliveryAddress">Full Address *</label>
+                            <textarea id="deliveryAddress" placeholder="Street, City, State, ZIP" readonly required></textarea>
+                        <small style="color: #666; font-size: 12px;">This field is automatically filled based on the fields above</small>
+                        <div class="error-message" id="addressError">Please enter a complete delivery address</div>
+                    </div>
+                </div>
+                
+                <div id="saved-address-display" style="display: none;">
+                    <div class="saved-address-box">
+                        <p id="saved-address-text" style="margin: 10px 0; padding: 15px; background-color: #f9f9f9; border-radius: 4px; border: 1px solid #ddd; white-space: pre-line;"></p>
+                        <small style="color: #666;">You can update your address in <a href="accountSettings.html" style="color: #d32f2f; text-decoration: underline;">Account Settings</a></small>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                    <small style="color: #666;">
+                        Don't have an address saved? <a href="accountSettings.html" style="color: #d32f2f; text-decoration: underline;">Add one in Account Settings</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="checkout-section">
+                <h2>Order Summary</h2>
+                <div id="order-summary" class="order-summary">
+                    <div class="loading">Loading order summary...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="max-width: 800px; margin: 20px auto;">
+        <div id="global-error" class="error-message" style="background-color: #ffebee; padding: 15px; border-radius: 4px; margin-bottom: 20px;"></div>
+        <button class="checkout-btn" onclick="processCheckout()">Confirm Order</button>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/checkout.js"></script>
+</body>
+</html>
+

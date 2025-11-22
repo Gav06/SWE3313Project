@@ -80,5 +80,53 @@ public class UserService {
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
+    public Optional<User> findById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Transactional
+    public User updateUserInfo(Long userId, String verifyPassword, String fullName, String address) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOpt.get();
+        
+        // Verify password
+        if (!passwordEncoder.matches(verifyPassword, user.getPassword())) {
+            throw new RuntimeException("Password is incorrect");
+        }
+
+        // Update fields
+        if (fullName != null) {
+            user.setFullName(fullName);
+        }
+        if (address != null) {
+            user.setAddress(address);
+        }
+
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void updatePassword(Long userId, String currentPassword, String newPassword) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = userOpt.get();
+        
+        // Verify current password
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+        // Update password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }
 

@@ -29,6 +29,15 @@ public class Order {
     @Column(nullable = false)
     private String status; // "pending", "confirmed", "completed"
 
+    @Column
+    private String deliveryAddress;
+
+    @Column
+    private String paymentCardType; // "Visa", "Mastercard", "Amex", etc.
+
+    @Column
+    private String paymentCardLast4; // Last 4 digits for display
+
     public Order() {
         this.orderDate = LocalDateTime.now();
         this.status = "pending";
@@ -88,6 +97,30 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public String getPaymentCardType() {
+        return paymentCardType;
+    }
+
+    public void setPaymentCardType(String paymentCardType) {
+        this.paymentCardType = paymentCardType;
+    }
+
+    public String getPaymentCardLast4() {
+        return paymentCardLast4;
+    }
+
+    public void setPaymentCardLast4(String paymentCardLast4) {
+        this.paymentCardLast4 = paymentCardLast4;
     }
 }
 

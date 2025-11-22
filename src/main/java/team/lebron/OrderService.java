@@ -22,7 +22,7 @@ public class OrderService {
     private OrderItemRepository orderItemRepository;
 
     @Transactional
-    public Order checkout(Long userId) {
+    public Order checkout(Long userId, String deliveryAddress, String cardType, String cardLast4) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -34,6 +34,10 @@ public class OrderService {
         // Create order
         BigDecimal total = cartService.calculateTotal(cart);
         Order order = new Order(user, total);
+        order.setDeliveryAddress(deliveryAddress);
+        order.setPaymentCardType(cardType);
+        order.setPaymentCardLast4(cardLast4);
+        order.setStatus("confirmed");
         order = orderRepository.save(order);
 
         // Create order items

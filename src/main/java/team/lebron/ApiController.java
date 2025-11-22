@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -202,7 +203,30 @@ public class ApiController {
         Map<String, Object> response = new HashMap<>();
         try {
             Long userId = Long.valueOf(request.get("userId").toString());
-            Order order = orderService.checkout(userId);
+            String deliveryAddress = (String) request.get("deliveryAddress");
+            String cardType = (String) request.get("cardType");
+            String cardLast4 = (String) request.get("cardLast4");
+
+            // Validate required fields
+            if (deliveryAddress == null || deliveryAddress.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Delivery address is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            if (cardType == null || cardType.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Credit card type is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            if (cardLast4 == null || cardLast4.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Credit card information is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            Order order = orderService.checkout(userId, deliveryAddress.trim(), cardType, cardLast4);
             response.put("success", true);
             response.put("message", "Order placed successfully");
             response.put("orderId", order.getId());
@@ -211,6 +235,101 @@ public class ApiController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/user/info")
+    public ResponseEntity<Map<String, Object>> getUserInfo(@RequestParam Long userId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<User> userOpt = userService.findById(userId);
+            if (userOpt.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "User not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            User user = userOpt.get();
+            response.put("success", true);
+            response.put("userId", user.getId());
+            response.put("username", user.getUsername());
+            response.put("email", user.getEmail());
+            response.put("fullName", user.getFullName() != null ? user.getFullName() : "");
+            response.put("address", user.getAddress() != null ? user.getAddress() : "");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PutMapping("/user/update")
+    public ResponseEntity<Map<String, Object>> updateUserInfo(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Long userId = Long.valueOf(request.get("userId").toString());
+            String verifyPassword = (String) request.get("verifyPassword");
+            String fullName = (String) request.get("fullName");
+            String address = (String) request.get("address");
+
+            if (verifyPassword == null || verifyPassword.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Password is required to confirm changes");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            userService.updateUserInfo(userId, verifyPassword, 
+                    fullName != null ? fullName.trim() : null, 
+                    address != null ? address.trim() : null);
+
+            response.put("success", true);
+            response.put("message", "Account information updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Failed to update account information");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @PutMapping("/user/update-password")
+    public ResponseEntity<Map<String, Object>> updatePassword(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Long userId = Long.valueOf(request.get("userId").toString());
+            String currentPassword = (String) request.get("currentPassword");
+            String newPassword = (String) request.get("newPassword");
+
+            if (currentPassword == null || currentPassword.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Current password is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            if (newPassword == null || newPassword.length() < 6) {
+                response.put("success", false);
+                response.put("message", "New password must be at least 6 characters");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            userService.updatePassword(userId, currentPassword, newPassword);
+
+            response.put("success", true);
+            response.put("message", "Password changed successfully");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Failed to change password");
             return ResponseEntity.badRequest().body(response);
         }
     }
