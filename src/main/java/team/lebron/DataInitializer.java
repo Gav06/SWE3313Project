@@ -22,28 +22,28 @@ public class DataInitializer implements CommandLineRunner {
                     "Classic pizza with tomato sauce, mozzarella, and fresh basil",
                     new BigDecimal("12.99"),
                     "pizza",
-                    "https://via.placeholder.com/300x200?text=Margherita+Pizza"
+                    "/pizzapics/margherita.png"
             ));
             menuItemRepository.save(new MenuItem(
                     "Pepperoni Pizza",
                     "Traditional pepperoni pizza with mozzarella cheese",
                     new BigDecimal("14.99"),
                     "pizza",
-                    "https://via.placeholder.com/300x200?text=Pepperoni+Pizza"
+                    "/pizzapics/pep.png"
             ));
             menuItemRepository.save(new MenuItem(
                     "Supreme Pizza",
                     "Loaded with pepperoni, sausage, peppers, onions, and mushrooms",
                     new BigDecimal("16.99"),
                     "pizza",
-                    "https://via.placeholder.com/300x200?text=Supreme+Pizza"
+                    "/pizzapics/supreme.png"
             ));
             menuItemRepository.save(new MenuItem(
                     "Hawaiian Pizza",
                     "Ham and pineapple on a classic pizza base",
                     new BigDecimal("15.99"),
                     "pizza",
-                    "https://via.placeholder.com/300x200?text=Hawaiian+Pizza"
+                    "/pizzapics/haw.png"
             ));
 
             // Drink items
@@ -52,28 +52,28 @@ public class DataInitializer implements CommandLineRunner {
                     "Classic Coca-Cola",
                     new BigDecimal("2.99"),
                     "drinks",
-                    "https://via.placeholder.com/300x200?text=Coke"
+                    "/pizzapics/coke.png"
             ));
             menuItemRepository.save(new MenuItem(
                     "Sprite",
                     "Refreshing lemon-lime soda",
                     new BigDecimal("2.99"),
                     "drinks",
-                    "https://via.placeholder.com/300x200?text=Sprite"
+                    "/pizzapics/sprite.png"
             ));
             menuItemRepository.save(new MenuItem(
                     "Fanta",
                     "Orange flavored soda",
                     new BigDecimal("2.99"),
                     "drinks",
-                    "https://via.placeholder.com/300x200?text=Fanta"
+                    "/pizzapics/fanta.png"
             ));
             menuItemRepository.save(new MenuItem(
                     "Iced Tea",
                     "Freshly brewed iced tea",
                     new BigDecimal("2.49"),
                     "drinks",
-                    "https://via.placeholder.com/300x200?text=Iced+Tea"
+                    "/pizzapics/icedtea.png"
             ));
 
             // Dessert items
@@ -82,28 +82,28 @@ public class DataInitializer implements CommandLineRunner {
                     "Warm, gooey chocolate chunk cookie",
                     new BigDecimal("4.99"),
                     "desserts",
-                    "https://via.placeholder.com/300x200?text=Chocolate+Cookie"
+                    "/pizzapics/chococookie.jpg"
             ));
             menuItemRepository.save(new MenuItem(
                     "Cinnamon Roll",
                     "Freshly baked cinnamon roll with cream cheese frosting",
                     new BigDecimal("5.99"),
                     "desserts",
-                    "https://via.placeholder.com/300x200?text=Cinnamon+Roll"
+                    "/pizzapics/cinnamonroll.jpg"
             ));
             menuItemRepository.save(new MenuItem(
                     "Molten Lava Cake",
                     "Warm chocolate cake with a gooey center, served with vanilla ice cream",
                     new BigDecimal("6.99"),
                     "desserts",
-                    "https://via.placeholder.com/300x200?text=Lava+Cake"
+                    "/pizzapics/moltencake.jpg"
             ));
             menuItemRepository.save(new MenuItem(
                     "Tiramisu",
                     "Classic Italian dessert with coffee and mascarpone",
                     new BigDecimal("7.99"),
                     "desserts",
-                    "https://via.placeholder.com/300x200?text=Tiramisu"
+                    "/pizzapics/tiramisu.avif"
             ));
         }
     }
