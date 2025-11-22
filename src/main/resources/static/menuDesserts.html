@@ -42,6 +42,7 @@
             background-color: white;
             transition: background-color 0.3s;
             white-space: nowrap;
+            border-radius: 5px;
         }
         .button:hover {
             background-color: #f0f0f0;
@@ -62,6 +63,9 @@
             min-height: 450px;
             display: flex;
             flex-direction: column;
+        }
+        .menu-item .description-container {
+            flex-grow: 1;
         }
         .menu-item img {
             width: 100%;
@@ -101,6 +105,7 @@
             cursor: pointer;
             border-radius: 4px;
             transition: background-color 0.3s;
+            margin-top: auto;
         }
         .add-to-cart-btn:hover {
             background-color: #b71c1c;
@@ -148,7 +153,9 @@
                              onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\'color: #999;\\'>No Image</span>'">
                     </div>
                     <h3>${item.name}</h3>
-                    <p>${item.description}</p>
+                    <div class="description-container">
+                        <p>${item.description}</p>
+                    </div>
                     <div class="price">${formatPrice(item.price)}</div>
                     <button class="add-to-cart-btn" onclick="addToCart(${item.id})">Add to Cart</button>
                 </div>

@@ -17,6 +17,7 @@
     width: 50%;
     cursor: pointer;
     background-color: white;
+    border-radius: 5px;
 }
 .center {
     margin: 0;

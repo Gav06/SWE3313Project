@@ -42,14 +42,15 @@ public class ApiController {
             String username = request.get("username");
             String password = request.get("password");
             String email = request.get("email");
+            String address = request.get("address");
 
-            if (username == null || password == null || email == null) {
+            if (username == null || password == null || email == null || address == null) {
                 response.put("success", false);
                 response.put("message", "All fields are required");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            User user = userService.registerUser(username, password, email);
+            User user = userService.registerUser(username, password, email, address);
             response.put("success", true);
             response.put("message", "Registration successful");
             response.put("userId", user.getId());
