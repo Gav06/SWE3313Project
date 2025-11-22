@@ -27,6 +27,7 @@ function updateNavigation() {
                 <span style="color: #999; font-weight: bold;">Guest - Currently logged out</span>
             `;
         }
+        
         navBar.appendChild(indicator);
     });
 }
