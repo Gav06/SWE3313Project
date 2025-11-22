@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Piero's Pizzeria - Customize Pizza</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .titleDiv {
+            border: 5px outset red;
+            background-color: white;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 0;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background-color: white;
+            border-left: 5px outset red;
+            border-right: 5px outset red;
+            border-bottom: 5px outset red;
+            margin-bottom: 30px;
+        }
+        .button {
+            border: 2px outset red;
+            color: black;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: white;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+        .button:hover {
+            background-color: #f0f0f0;
+        }
+        .login-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-left: 10px;
+        }
+        .customize-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border: 3px solid red;
+            border-radius: 8px;
+        }
+        .pizza-info {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .pizza-info h2 {
+            color: #d32f2f;
+            margin: 10px 0;
+        }
+        .pizza-info .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        .customization-section {
+            margin-bottom: 30px;
+        }
+        .customization-section h3 {
+            color: #d32f2f;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .option-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .option-item {
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            background-color: white;
+        }
+        .option-item:hover {
+            border-color: #d32f2f;
+            background-color: #fff5f5;
+        }
+        .option-item.selected {
+            border-color: #d32f2f;
+            background-color: #ffebee;
+            font-weight: bold;
+        }
+        .option-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .option-item input[type="radio"] {
+            margin-right: 8px;
+        }
+        .topping-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quantity-btn {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 18px;
+        }
+        .quantity-btn:hover {
+            background-color: #b71c1c;
+        }
+        .quantity-display {
+            min-width: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .add-to-cart-btn {
+            flex: 1;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .add-to-cart-btn:hover {
+            background-color: #45a049;
+        }
+        .cancel-btn {
+            flex: 1;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .cancel-btn:hover {
+            background-color: #d32f2f;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="titleDiv">
+        <h1>Piero's Pizzeria</h1>
+        <h2>Customize Your Pizza</h2>
+    </div>
+    <div class="nav-buttons">
+        <button class="button" onclick="window.location.href='index.html'">Home</button>
+        <button class="button" onclick="window.location.href='menuMainPage.html'">Menu</button>
+        <button class="button" onclick="window.location.href='cart.html'">Cart</button>
+        <button class="button" onclick="window.location.href='loginpage.html'">Login</button>
+    </div>
+    <div id="customize-content" class="customize-container">
+        <div class="loading">Loading pizza details...</div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        // Get item ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('itemId');
+        
+        let pizzaItem = null;
+        const customizations = {
+            sauce: 'marinara',
+            crust: 'regular',
+            toppings: {}
+        };
+
+        const availableToppings = [
+            'cheese', 'onion', 'pineapple', 'jalapeno', 'olives', 
+            'mushroom', 'pepperoni', 'premium chicken', 'Italian sausage', 
+            'bacon', 'beef'
+        ];
+
+        async function loadPizzaDetails() {
+            if (!itemId) {
+                document.getElementById('customize-content').innerHTML = 
+                    '<div class="loading">Invalid pizza selection. <a href="menuPizza.html">Go back to menu</a></div>';
+                return;
+            }
+
+            try {
+                const items = await loadMenuItems('pizza');
+                pizzaItem = items.find(item => item.id == itemId);
+                
+                if (!pizzaItem) {
+                    document.getElementById('customize-content').innerHTML = 
+                        '<div class="loading">Pizza not found. <a href="menuPizza.html">Go back to menu</a></div>';
+                    return;
+                }
+
+                renderCustomizationPage();
+            } catch (error) {
+                console.error('Error loading pizza:', error);
+                document.getElementById('customize-content').innerHTML = 
+                    '<div class="loading">Error loading pizza details.</div>';
+            }
+        }
+
+        function renderCustomizationPage() {
+            const container = document.getElementById('customize-content');
+            container.innerHTML = `
+                <div class="pizza-info">
+                    <h2>${pizzaItem.name}</h2>
+                    <p>${pizzaItem.description}</p>
+                    <div class="price">Base Price: ${formatPrice(pizzaItem.price)}</div>
+                </div>
+
+                <div class="customization-section">
+                    <h3>Sauce</h3>
+                    <div class="option-group">
+                        <label class="option-item ${customizations.sauce === 'marinara' ? 'selected' : ''}">
+                            <input type="radio" name="sauce" value="marinara" ${customizations.sauce === 'marinara' ? 'checked' : ''} onchange="updateSauce('marinara')">
+                            Marinara
+                        </label>
+                        <label class="option-item ${customizations.sauce === 'alfredo' ? 'selected' : ''}">
+                            <input type="radio" name="sauce" value="alfredo" ${customizations.sauce === 'alfredo' ? 'checked' : ''} onchange="updateSauce('alfredo')">
+                            Alfredo
+                        </label>
+                    </div>
+                </div>
+
+                <div class="customization-section">
+                    <h3>Crust</h3>
+                    <div class="option-group">
+                        <label class="option-item ${customizations.crust === 'thin' ? 'selected' : ''}">
+                            <input type="radio" name="crust" value="thin" ${customizations.crust === 'thin' ? 'checked' : ''} onchange="updateCrust('thin')">
+                            Thin
+                        </label>
+                        <label class="option-item ${customizations.crust === 'regular' ? 'selected' : ''}">
+                            <input type="radio" name="crust" value="regular" ${customizations.crust === 'regular' ? 'checked' : ''} onchange="updateCrust('regular')">
+                            Regular
+                        </label>
+                        <label class="option-item ${customizations.crust === 'pan' ? 'selected' : ''}">
+                            <input type="radio" name="crust" value="pan" ${customizations.crust === 'pan' ? 'checked' : ''} onchange="updateCrust('pan')">
+                            Pan
+                        </label>
+                    </div>
+                </div>
+
+                <div class="customization-section">
+                    <h3>Toppings</h3>
+                    <div class="option-group">
+                        ${availableToppings.map(topping => `
+                            <div class="option-item topping-item">
+                                <label style="flex: 1; cursor: pointer;">
+                                    <input type="checkbox" value="${topping}" 
+                                           ${customizations.toppings[topping] ? 'checked' : ''} 
+                                           onchange="toggleTopping('${topping}')">
+                                    ${topping.charAt(0).toUpperCase() + topping.slice(1)}
+                                </label>
+                                ${customizations.toppings[topping] ? `
+                                    <div class="quantity-control">
+                                        <button class="quantity-btn" onclick="adjustToppingQuantity('${topping}', -1)">-</button>
+                                        <span class="quantity-display">${customizations.toppings[topping]}</span>
+                                        <button class="quantity-btn" onclick="adjustToppingQuantity('${topping}', 1)">+</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="cancel-btn" onclick="window.location.href='menuPizza.html'">Cancel</button>
+                    <button class="add-to-cart-btn" onclick="addCustomizedPizzaToCart()">Add to Cart</button>
+                </div>
+            `;
+        }
+
+        function updateSauce(sauce) {
+            customizations.sauce = sauce;
+            document.querySelectorAll('input[name="sauce"]').forEach(radio => {
+                const label = radio.closest('.option-item');
+                if (radio.value === sauce) {
+                    label.classList.add('selected');
+                } else {
+                    label.classList.remove('selected');
+                }
+            });
+        }
+
+        function updateCrust(crust) {
+            customizations.crust = crust;
+            document.querySelectorAll('input[name="crust"]').forEach(radio => {
+                const label = radio.closest('.option-item');
+                if (radio.value === crust) {
+                    label.classList.add('selected');
+                } else {
+                    label.classList.remove('selected');
+                }
+            });
+        }
+
+        function toggleTopping(topping) {
+            const checkbox = event.target;
+            if (checkbox.checked) {
+                customizations.toppings[topping] = 1;
+            } else {
+                delete customizations.toppings[topping];
+            }
+            renderCustomizationPage();
+        }
+
+        function adjustToppingQuantity(topping, delta) {
+            if (!customizations.toppings[topping]) {
+                customizations.toppings[topping] = 1;
+            } else {
+                customizations.toppings[topping] = Math.max(1, customizations.toppings[topping] + delta);
+            }
+            renderCustomizationPage();
+        }
+
+        async function addCustomizedPizzaToCart() {
+            if (!requireLogin()) return;
+
+            try {
+                const customizationsJson = JSON.stringify(customizations);
+                const response = await fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: parseInt(getUserId()),
+                        menuItemId: parseInt(itemId),
+                        quantity: 1,
+                        customizations: customizationsJson
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Customized pizza added to cart!');
+                    window.location.href = 'cart.html';
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to add pizza to cart');
+            }
+        }
+
+        loadPizzaDetails();
+    </script>
+</body>
+</html>
+

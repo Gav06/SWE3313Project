@@ -1,34 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <title>Mom and Pop's Pizzeria</title>
-    <title>Mom and Pop's Pizzeria</title>
+    <title>Piero's Pizzeria</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .titleDiv {
+            border: 5px outset red;
+            background-color: white;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .button {
+            border: 2px outset red;
+            color: black;
+            padding: 20px 40px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 24px;
+            width: 100%;
+            cursor: pointer;
+            background-color: white;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #f0f0f0;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-<div class="titleDiv">
-    <h1 style="text-align: center">Mom and Pop's Pizzeria</h1>
-    <h2 style="text-align: center">Home</h2>
-</div>
-<div class="center">
-    <button class="button" onclick="callBackend()" style="transform: translate(50%, 0%)">Order</button>
-    <button class="button" onclick="callBackend()" style="transform: translate(50%, 50%)">Settings</button>
-    <button class="button" onclick="{
-        window.location.href = 'loginpage.html';
-    }" style="transform: translate(50%, 100%)">Login</button>
-</div>
-    <div id="result"></div>
-
+    <div class="titleDiv">
+        <h1>Piero's Pizzeria</h1>
+        <h2>Welcome!</h2>
+    </div>
+    <div class="button-container">
+        <button class="button" onclick="window.location.href='menuMainPage.html'">View Menu</button>
+        <button class="button" onclick="window.location.href='loginpage.html'">Login</button>
+        <button class="button" onclick="window.location.href='signup.html'">Sign Up</button>
+    </div>
+    <div id="result" class="result"></div>
+    <script src="js/navigation.js"></script>
     <script>
-        async function callBackend() {
-            try {
-                const response = await fetch('/api/hello');
-                const data = await response.json();
-                document.getElementById('result').innerHTML = data.hello;
-            } catch (error) {
-                console.error('Error:', error)
+        // Show login status on home page
+        document.addEventListener('DOMContentLoaded', function() {
+            const userId = sessionStorage.getItem('userId');
+            const username = sessionStorage.getItem('username');
+            const isLoggedIn = userId !== null && userId !== undefined && userId !== '';
+            const resultDiv = document.getElementById('result');
+            
+            if (isLoggedIn && username) {
+                resultDiv.innerHTML = `<p style="color: #4caf50; font-weight: bold; margin-top: 20px;">✓ Logged in as: ${username}</p>`;
+            } else {
+                resultDiv.innerHTML = `<p style="color: #999; font-weight: bold; margin-top: 20px;">Guest - Currently logged out</p>`;
             }
-        }
+        });
     </script>
 </body>
 </html>
