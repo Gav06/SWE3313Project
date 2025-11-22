@@ -2,68 +2,252 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piero's Pizzeria - Login</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            background-color: white;
+            padding: 40px;
+            border: 3px solid red;
+            border-radius: 8px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .titleDiv {
+            border: 5px outset red;
+            background-color: white;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .titleDiv h1 {
+            margin: 0;
+            color: #d32f2f;
+            font-size: 28px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #d32f2f;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button[type="submit"] {
+            flex: 1;
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"]:hover {
+            background-color: #b71c1c;
+        }
+        button[type="button"] {
+            flex: 1;
+            background-color: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+            padding: 14px 28px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button[type="button"]:hover {
+            background-color: #e0e0e0;
+        }
+        #error {
+            color: #d32f2f;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #ffebee;
+            border: 1px solid #ffcdd2;
+            border-radius: 4px;
+            display: none;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        #success {
+            color: #4caf50;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+            display: none;
+            font-size: 14px;
+        }
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .signup-link a {
+            color: #d32f2f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
     <script>
         async function handleLogin(event) {
-          event.preventDefault();
-          const username = document.getElementById('username').value;
-          const password = document.getElementById('password').value;
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
 
-          if (!username || !password) {
-            showError("Enter Username/Password");
-            return;
-          }
+            hideMessages();
+            hideLoading();
 
-          try {
-            const response = await fetch('/api/login', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-                // fill request with user credentials (remember to change this to a hashed version in the future)
-              body: JSON.stringify({ username, password })
-            });
-
-            const result = await response.json();
-            if (result.success) {
-              window.location.href = 'menu/pizza.html';
-            } else {
-              showError("Incorrect Username/Password. Try Again!");
+            if (!username || !password) {
+                showError("Please enter both username and password.");
+                return;
             }
-          } catch (error) {
-            showError("LOGIN UNAVAILABLE. TRY AGAIN IN 1 MINUTE");
-            console.error(error);
-          }
+
+            showLoading();
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+                hideLoading();
+
+                if (result.success) {
+                    // Store user ID and username in sessionStorage
+                    if (result.userId) {
+                        sessionStorage.setItem('userId', result.userId);
+                    }
+                    if (result.username) {
+                        sessionStorage.setItem('username', result.username);
+                    }
+                    showSuccess("Login successful! Redirecting...");
+                    setTimeout(() => {
+                        window.location.href = 'menuMainPage.html';
+                    }, 500);
+                } else {
+                    showError(result.message || "Login failed. Please try again.");
+                }
+            } catch (error) {
+                hideLoading();
+                showError("Unable to connect to the server. Please check your connection and try again.");
+                console.error(error);
+            }
         }
 
         function showError(message) {
-          const errorDiv = document.getElementById('error');
-          errorDiv.textContent = message;
-          errorDiv.style.display = 'block';
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('success').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
         }
     </script>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
-    <body>
-        <header>
-            <div class="titleDiv">
-                <!--Is this supposed to be piero's or "mom and pop's" i still cant remember?-->
-                <h1>Login to Piero's Pizzeria</h1>
+<body>
+    <div class="login-container">
+        <div class="titleDiv">
+            <h1>Piero's Pizzeria</h1>
+            <h2>Login</h2>
+        </div>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your username">
             </div>
-        </header>
-        <main>
-            <form onsubmit="handleLogin(event)">
-                <p>Don’t Have an Account? <a href="signup.html">Sign Up</a></p>
 
-                <label for="username">Username:</label><br>
-                <input type="text" id="username" name="username"><br><br>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+            </div>
 
-                <label for="password">Password:</label><br>
-                <input type="password" id="password" name="password"><br><br>
-
+            <div class="button-group">
                 <button type="submit">LOGIN</button>
                 <button type="button" onclick="window.location.href='index.html'">BACK</button>
+            </div>
 
-                <div id="error" style="color: red; margin-top: 1em; display: none;"></div>
-            </form>
-        </main>
-    </body>
+            <div id="error"></div>
+            <div id="success"></div>
+            <div id="loading" class="loading">Logging in...</div>
+
+            <div class="signup-link">
+                <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+            </div>
+        </form>
+    </div>
+</body>
 </html>

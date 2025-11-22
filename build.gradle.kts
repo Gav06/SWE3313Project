@@ -19,6 +19,14 @@ dependencies {
     // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf") // Optional: if you want server-side templates
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    
+    // Database
+    runtimeOnly("com.h2database:h2")
+    
+    // Password hashing
+    implementation("org.springframework.security:spring-security-crypto:6.2.0")
     
     // Development tools (optional but helpful)
     developmentOnly("org.springframework.boot:spring-boot-devtools")
