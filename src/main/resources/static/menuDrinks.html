@@ -34,6 +34,7 @@
 
     .button1 {background-color: white;}
 </style>
+    <!--Title and Home button-->
     <body>
     <div class="titleDiv">
         <h1 style="text-align: center">Mom and Pop's Pizzeria</h1>
@@ -41,9 +42,22 @@
     </div>
     <button class="button button1" style="padding: 10px 10px; margin: 10px 10px; font-size: 24px; width: 10%">Home</button>
     </body>
+    <!--Drink selection buttons-->
     <div class="center">
         <button class="button button1" onclick="callBackend()" style="transform: translate(-75%, 50%)">Coke</button>
         <button class="button button1" onclick="callBackend()" style="transform: translate(50%, -50%)">Sprite</button>
         <button class="button button1" onclick="callBackend()" style="transform: translate(175%, -150%)">Fanta</button>
+    </div>
+    <!--Confirmation-->
+    <div hidden class="center" style="padding:50px 100px; border: 5px outset red; background: white; text-align: center">
+    <p style="font-size: 32px">Add Drink to cart?</p>
+    <button class="button button1" style="padding:25px 25px; font-size: 16px; margin-bottom:10px">Yes</button>
+    <button class="button button1" style="padding:25px 25px; font-size: 16px">No</button>
+    </div>
+    <!--Cart is full-->
+    <div hidden class="center" style="padding:50px 100px; border: 5px outset red; background: white; text-align: center">
+        <p style="font-size: 16px">Cart is full: Cannot add any new items. To add new items, you can remove current items from the cart.</p>
+        <button class="button button1" style="padding:25px 25px; font-size: 16px; margin-bottom:10px">Go to cart</button>
+        <button class="button button1" style="padding:25px 25px; font-size: 16px">OK</button>
     </div>
 </html>

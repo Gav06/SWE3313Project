@@ -10,6 +10,22 @@ border: 5px outset red;
 background-color: white;
 text-align: center;
 }
+  .optionsDiv {
+  border: 5px outset red;
+  background-color: white;
+  text-align: center;
+  width: 12.5%;
+  margin-bottom: 20px;
+  margin-left: 325px;
+}
+    .center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
   .button {
   left: 30px;
   border: 2px outset red;
@@ -24,12 +40,106 @@ text-align: center;
 }
   .button1 {background-color: white;}
 </style>
+<!--Title and Home button-->
 <body>
   <div class="titleDiv">
     <h1 style="text-align: center">Mom and Pop's Pizzeria</h1>
     <h2 style="text-align: center">Pizza Menu</h2>
   </div>
   <button class="button button1" style="padding: 10px 10px; margin: 10px 10px; font-size: 24px; width: 10%">Home</button>
-
 </body>
+  <!--Selections-->
+  <!--Pizza Size-->
+  <div class="optionsDiv">
+      <h1>Size (Select 1)</h1>
+      <form>
+          <input type="radio" id="size1" name="size" value="Small">
+          <label for="size1" style="font-size: 24px">Small</label><br>
+          <input type="radio" id="size2" name="size" value="Medium">
+          <label for="size2" style="font-size: 24px">Medium</label><br>
+          <input type="radio" id="size3" name="size" value="Large">
+          <label for="size3" style="font-size: 24px">Large</label><br>
+          <input type="radio" id="size4" name="size" value="ExtraLarge">
+          <label for="size4" style="font-size: 24px">Extra Large</label>
+      </form>
+  </div>
+  <!--Pizza Sauce-->
+  <div class="optionsDiv">
+      <h1>Sauce (Select 1)</h1>
+      <form>
+          <input type="radio" id="sauce1" name="sauce" value="Marinara">
+          <label for="sauce1" style="font-size: 24px">Marinara</label><br>
+          <input type="radio" id="sauce2" name="sauce" value="Alfredo">
+          <label for="sauce2" style="font-size: 24px">Alfredo</label><br>
+      </form>
+  </div>
+  <!--Pizza Crust-->
+  <div class="optionsDiv">
+      <h1>Crust (Select 1)</h1>
+      <form>
+          <input type="radio" id="crust1" name="crust" value="Thin">
+          <label for="crust1" style="font-size: 24px">Thin</label><br>
+          <input type="radio" id="crust2" name="crust" value="Regular">
+          <label for="crust2" style="font-size: 24px">Regular</label><br>
+          <input type="radio" id="crust3" name="crust" value="Pan">
+          <label for="crust3" style="font-size: 24px">Pan</label><br>
+      </form>
+  </div>
+
+  <!--Pizza Toppings-->
+  <div class="optionsDiv" style="translate:275px -570px; width: 15%">
+      <h1>Toppings (Select 3)</h1>
+      <form>
+          <input type="checkbox" id="topping1" name="topping1" value="Cheese">
+          <label for="topping1" style="font-size: 24px">Cheese</label><br>
+          <input type="checkbox" id="topping2" name="topping2" value="Onion">
+          <label for="topping2" style="font-size: 24px">Onion</label><br>
+          <input type="checkbox" id="topping3" name="topping3" value="Pineapple">
+          <label for="topping3" style="font-size: 24px">Pineapple</label><br>
+          <input type="checkbox" id="topping4" name="topping4" value="Jalapeno">
+          <label for="topping4" style="font-size: 24px">Jalapeno</label><br>
+          <input type="checkbox" id="topping5" name="topping5" value="Olives">
+          <label for="topping5" style="font-size: 24px">Olives</label><br>
+          <input type="checkbox" id="topping6" name="topping6" value="Mushroom">
+          <label for="topping6" style="font-size: 24px">Mushroom</label><br>
+          <input type="checkbox" id="topping7" name="topping7" value="Pepperoni">
+          <label for="topping7" style="font-size: 24px">Pepperoni</label><br>
+          <input type="checkbox" id="topping8" name="topping8" value="Chicken">
+          <label for="topping8" style="font-size: 24px">Chicken</label><br>
+          <input type="checkbox" id="topping9" name="topping9" value="Sausage">
+          <label for="topping9" style="font-size: 24px">Sausage</label><br>
+          <input type="checkbox" id="topping10" name="topping10" value="Bacon">
+          <label for="topping10" style="font-size: 24px">Bacon</label><br>
+          <input type="checkbox" id="topping11" name="topping11" value="Beef">
+          <label for="topping11" style="font-size: 24px">Beef</label><br>
+      </form>
+  </div>
+  <!--Options-->
+  <div style="translate:600px -565px">
+      <button class="button button1" style="padding:15px 15px; font-size: 16px; margin-right: 25px">Undo</button>
+      <button class="button button1" style="padding:15px 15px; font-size: 16px; margin-right: 25px">Redo</button>
+      <button class="button button1" style="padding:15px 15px; font-size: 16px; margin-right: 25px">Reset</button>
+      <button class="button button1" style="padding:15px 15px; font-size: 20px; translate: -235px 75px">Add Order</button>
+  </div>
+  <!--Pizza Preview-->
+  <div class="optionsDiv" style="translate:650px -1035px">
+      <h1>Pizza Preview Here</h1>
+  </div>
+  <!--Confirmation-->
+  <div hidden class="center" style="padding:50px 100px; border: 5px outset red; background: white; text-align: center">
+      <p style="font-size: 32px">Add Pizza to cart?</p>
+      <button class="button button1" style="padding:25px 25px; font-size: 16px; margin-bottom:10px">Yes</button>
+      <button class="button button1" style="padding:25px 25px; font-size: 16px">No</button>
+  </div>
+  <!--Cart is full-->
+  <div hidden class="center" style="padding:50px 100px; border: 5px outset red; background: white; text-align: center">
+      <p style="font-size: 16px">Cart is full: Cannot add any new items. To add new items, you can remove current items from the cart.</p>
+      <button class="button button1" style="padding:25px 25px; font-size: 16px; margin-bottom:10px">Go to cart</button>
+      <button class="button button1" style="padding:25px 25px; font-size: 16px">OK</button>
+  </div>
+  <!--Error-->
+  <div class="center" style="padding:50px 100px; border: 5px outset red; background: white; text-align: center">
+      <p style="font-size: 32px">Error</p>
+      <button class="button button1" style="padding:25px 25px; font-size: 16px; margin-bottom:10px">OK</button>
+  </div>
 </html>
