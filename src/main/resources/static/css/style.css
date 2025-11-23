@@ -1,12 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Gabriola', 'Cormorant Garamond', serif;
+}
+
 .titleDiv {
-    border: 5px outset red;
+    border: 5px outset #d32f2f;
     background-color: white;
     text-align: center;
 }
 
+.titleDiv h1 {
+    font-size: 48px;
+    margin: 10px 0;
+    font-family: 'Gabriola', 'Cormorant Garamond', serif;
+}
+
+.titleDiv h2 {
+    font-size: 36px;
+    margin: 10px 0;
+    font-family: 'Gabriola', 'Cormorant Garamond', serif;
+}
+
 .button {
     left: 30px;
-    border: 2px outset red;
+    border: 2px outset #d32f2f;
     color: black;
     padding: 25px 25px;
     text-align: center;
@@ -18,6 +36,7 @@
     cursor: pointer;
     background-color: white;
     border-radius: 5px;
+    font-family: 'Gabriola', 'Cormorant Garamond', serif;
 }
 .center {
     margin: 0;
