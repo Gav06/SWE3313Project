@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -22,7 +22,7 @@ public class OrderService {
     private OrderItemRepository orderItemRepository;
 
     @Transactional
-    public Order checkout(Long userId, String deliveryAddress, String cardType, String cardLast4) {
+    public Order checkout(Long userId, String deliveryAddress, String cardType, String cardLast4, String orderType) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -37,6 +37,7 @@ public class OrderService {
         order.setDeliveryAddress(deliveryAddress);
         order.setPaymentCardType(cardType);
         order.setPaymentCardLast4(cardLast4);
+        order.setOrderType(orderType);
         order.setStatus("confirmed");
         order = orderRepository.save(order);
 
@@ -56,6 +57,10 @@ public class OrderService {
         cartService.clearCart(userId);
 
         return order;
+    }
+
+    public Optional<Order> findById(Long orderId) {
+        return orderRepository.findById(orderId);
     }
 }
 

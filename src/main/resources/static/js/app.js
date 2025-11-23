@@ -21,8 +21,9 @@ function isLoggedIn() {
 // Redirect to login if not logged in
 function requireLogin() {
     if (!isLoggedIn()) {
-        alert('Please login to continue');
-        window.location.href = 'loginpage.html';
+        showError('Please login to continue', function() {
+            window.location.href = 'loginpage.html';
+        });
         return false;
     }
     return true;
@@ -45,14 +46,19 @@ async function addToCart(menuItemId, quantity = 1) {
 
         const result = await response.json();
         if (result.success) {
-            alert('Item added to cart!');
+            showSuccess('Item added to cart!');
             updateCartCount();
         } else {
-            alert('Error: ' + result.message);
+            // Check if it's a quantity limit error
+            if (result.message && result.message.includes('Order limit is 25')) {
+                showWarning('Order limit is 25 items per menu item. Maximum quantity reached.');
+            } else {
+                showError('Error: ' + result.message);
+            }
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to add item to cart');
+        showError('Failed to add item to cart');
     }
 }
 
@@ -92,12 +98,17 @@ async function updateCartItem(cartItemId, quantity) {
         if (result.success) {
             return true;
         } else {
-            alert('Error: ' + result.message);
+            // Check if it's a quantity limit error
+            if (result.message && result.message.includes('Order limit is 25')) {
+                showWarning('Order limit is 25 items per menu item. Maximum quantity reached.');
+            } else {
+                showError('Error: ' + result.message);
+            }
             return false;
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to update cart');
+        showError('Failed to update cart');
         return false;
     }
 }
@@ -115,12 +126,12 @@ async function removeFromCart(cartItemId) {
         if (result.success) {
             return true;
         } else {
-            alert('Error: ' + result.message);
+            showError('Error: ' + result.message);
             return false;
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to remove item');
+        showError('Failed to remove item');
         return false;
     }
 }
@@ -129,30 +140,12 @@ async function removeFromCart(cartItemId) {
 async function checkout() {
     if (!requireLogin()) return;
 
-    if (!confirm('Are you sure you want to checkout?')) {
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                userId: parseInt(getUserId())
-            })
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            alert('Order placed successfully! Order ID: ' + result.orderId);
-            window.location.href = 'index.html';
-        } else {
-            alert('Error: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to checkout');
-    }
+    showConfirm('Are you sure you want to checkout?', function(confirmed) {
+        if (!confirmed) return;
+        
+        // This function is deprecated - checkout is now handled in checkout.js
+        showWarning('Please use the checkout page to complete your order');
+    });
 }
 
 // Update cart count badge (if exists)
@@ -184,5 +177,29 @@ async function loadMenuItems(category) {
 // Format price
 function formatPrice(price) {
     return '$' + parseFloat(price).toFixed(2);
+}
+
+// Load modal.js functions if available
+if (typeof showError === 'undefined') {
+    // Fallback functions if modal.js is not loaded
+    function showError(message, callback) {
+        alert('Error: ' + message);
+        if (callback) callback();
+    }
+    function showSuccess(message, callback) {
+        alert(message);
+        if (callback) callback();
+    }
+    function showWarning(message, callback) {
+        alert('Warning: ' + message);
+        if (callback) callback();
+    }
+    function showConfirm(message, callback) {
+        if (confirm(message)) {
+            if (callback) callback(true);
+        } else {
+            if (callback) callback(false);
+        }
+    }
 }
 

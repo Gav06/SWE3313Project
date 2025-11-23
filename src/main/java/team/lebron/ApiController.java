@@ -43,14 +43,16 @@ public class ApiController {
             String password = request.get("password");
             String email = request.get("email");
             String address = request.get("address");
+            String fullName = request.get("fullName");
+            String phoneNumber = request.get("phoneNumber");
 
-            if (username == null || password == null || email == null || address == null) {
+            if (username == null || password == null || email == null || address == null || fullName == null || phoneNumber == null) {
                 response.put("success", false);
                 response.put("message", "All fields are required");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            User user = userService.registerUser(username, password, email, address);
+            User user = userService.registerUser(username, password, email, address, fullName, phoneNumber);
             response.put("success", true);
             response.put("message", "Registration successful");
             response.put("userId", user.getId());
@@ -126,9 +128,13 @@ public class ApiController {
             response.put("success", true);
             response.put("message", "Item added to cart");
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             response.put("success", false);
             response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Failed to add item to cart: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }
@@ -207,6 +213,20 @@ public class ApiController {
             String deliveryAddress = (String) request.get("deliveryAddress");
             String cardType = (String) request.get("cardType");
             String cardLast4 = (String) request.get("cardLast4");
+            String orderType = (String) request.get("orderType");
+
+            // Validate order type
+            if (orderType == null || orderType.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Please select delivery or pickup");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            if (!orderType.equals("delivery") && !orderType.equals("pickup")) {
+                response.put("success", false);
+                response.put("message", "Order type must be either 'delivery' or 'pickup'");
+                return ResponseEntity.badRequest().body(response);
+            }
 
             // Validate required fields
             if (deliveryAddress == null || deliveryAddress.trim().isEmpty()) {
@@ -221,13 +241,20 @@ public class ApiController {
                 return ResponseEntity.badRequest().body(response);
             }
 
+            // Validate card type is only Visa or Mastercard
+            if (!cardType.equals("Visa") && !cardType.equals("Mastercard")) {
+                response.put("success", false);
+                response.put("message", "Only Visa and Mastercard are accepted");
+                return ResponseEntity.badRequest().body(response);
+            }
+
             if (cardLast4 == null || cardLast4.trim().isEmpty()) {
                 response.put("success", false);
                 response.put("message", "Credit card information is required");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            Order order = orderService.checkout(userId, deliveryAddress.trim(), cardType, cardLast4);
+            Order order = orderService.checkout(userId, deliveryAddress.trim(), cardType, cardLast4, orderType);
             response.put("success", true);
             response.put("message", "Order placed successfully");
             response.put("orderId", order.getId());
@@ -257,6 +284,7 @@ public class ApiController {
             response.put("username", user.getUsername());
             response.put("email", user.getEmail());
             response.put("fullName", user.getFullName() != null ? user.getFullName() : "");
+            response.put("phoneNumber", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
             response.put("address", user.getAddress() != null ? user.getAddress() : "");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -331,6 +359,57 @@ public class ApiController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Failed to change password");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<Map<String, Object>> getOrder(@PathVariable Long orderId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Optional<Order> orderOpt = orderService.findById(orderId);
+            if (orderOpt.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Order not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            Order order = orderOpt.get();
+            User user = order.getUser();
+
+            Map<String, Object> orderMap = new HashMap<>();
+            orderMap.put("id", order.getId());
+            orderMap.put("total", order.getTotal());
+            orderMap.put("orderDate", order.getOrderDate().toString());
+            orderMap.put("status", order.getStatus());
+            orderMap.put("deliveryAddress", order.getDeliveryAddress());
+            orderMap.put("orderType", order.getOrderType());
+            orderMap.put("paymentCardType", order.getPaymentCardType());
+            orderMap.put("paymentCardLast4", order.getPaymentCardLast4());
+
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("fullName", user.getFullName() != null ? user.getFullName() : user.getUsername());
+            userMap.put("email", user.getEmail());
+            userMap.put("phoneNumber", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
+            userMap.put("address", user.getAddress() != null ? user.getAddress() : "");
+
+            List<Map<String, Object>> items = order.getItems().stream().map(item -> {
+                Map<String, Object> itemMap = new HashMap<>();
+                itemMap.put("name", item.getMenuItem().getName());
+                itemMap.put("quantity", item.getQuantity());
+                itemMap.put("price", item.getPrice());
+                itemMap.put("subtotal", item.getSubtotal());
+                return itemMap;
+            }).collect(Collectors.toList());
+
+            response.put("success", true);
+            response.put("order", orderMap);
+            response.put("customer", userMap);
+            response.put("items", items);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
     }

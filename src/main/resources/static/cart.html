@@ -141,23 +141,24 @@
             margin-bottom: 20px;
         }
         .checkout-btn {
-            background-color: #4caf50;
-            color: white;
-            border: none;
+            border: 2px outset #d32f2f;
+            color: black;
             padding: 15px 30px;
             font-size: 20px;
             cursor: pointer;
-            border-radius: 4px;
-            width: 100%;
+            background-color: white;
             transition: background-color 0.3s;
+            border-radius: 5px;
+            width: 100%;
             font-family: 'Gabriola', 'Cormorant Garamond', serif;
         }
         .checkout-btn:hover {
-            background-color: #45a049;
+            background-color: #f0f0f0;
         }
         .checkout-btn:disabled {
             background-color: #ccc;
             cursor: not-allowed;
+            color: #666;
         }
         .empty-cart {
             text-align: center;
@@ -192,6 +193,7 @@
         </div>
     </div>
 
+    <script src="js/modal.js"></script>
     <script src="js/app.js"></script>
     <script>
         async function loadCart() {
@@ -229,9 +231,10 @@
                         const parts = [];
                         if (custom.sauce) parts.push(`Sauce: ${custom.sauce}`);
                         if (custom.crust) parts.push(`Crust: ${custom.crust}`);
+                        if (custom.size) parts.push(`Size: ${custom.size}`);
                         if (custom.toppings && Object.keys(custom.toppings).length > 0) {
-                            const toppings = Object.entries(custom.toppings)
-                                .map(([name, qty]) => qty > 1 ? `${name} (x${qty})` : name)
+                            const toppings = Object.keys(custom.toppings)
+                                .map(name => name.charAt(0).toUpperCase() + name.slice(1))
                                 .join(', ');
                             parts.push(`Toppings: ${toppings}`);
                         }

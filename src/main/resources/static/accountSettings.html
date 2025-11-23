@@ -117,24 +117,30 @@
             display: block;
         }
         .save-btn {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 12px 24px;
+            border: 2px outset #d32f2f;
+            color: black;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
             font-size: 16px;
             cursor: pointer;
-            border-radius: 4px;
-            width: 100%;
+            background-color: white;
             transition: background-color 0.3s;
+            white-space: nowrap;
+            border-radius: 5px;
+            width: 100%;
             margin-top: 10px;
             font-family: 'Gabriola', 'Cormorant Garamond', serif;
         }
         .save-btn:hover {
-            background-color: #45a049;
+            background-color: #f0f0f0;
         }
         .save-btn:disabled {
             background-color: #ccc;
             cursor: not-allowed;
+            border-color: #ccc;
+            color: #666;
         }
         .password-verify-section {
             background-color: #fff3cd;
@@ -223,7 +229,7 @@
                 </div>
             </form>
 
-            <button class="save-btn" onclick="updateAccountInfo()">Save Changes</button>
+            <button class="save-btn" id="saveAccountBtn" onclick="updateAccountInfo()" disabled>Save Changes</button>
             <div class="success-message" id="accountSuccess" style="margin-top: 10px;"></div>
         </div>
 

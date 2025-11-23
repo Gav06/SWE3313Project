@@ -29,6 +29,9 @@ async function loadAccountInfo() {
             } else {
                 document.getElementById('address').value = '';
             }
+            
+            // Ensure editable fields remain enabled after loading
+            enableEditableFields();
         } else {
             showGlobalError('Failed to load account information');
         }
@@ -81,6 +84,8 @@ async function updateAccountInfo() {
         if (result.success) {
             showSuccess('accountSuccess', 'Account information updated successfully!');
             document.getElementById('verifyPassword').value = '';
+            // Disable save button after successful save
+            updateSaveButtonState();
             // Reload account info to reflect changes
             setTimeout(() => loadAccountInfo(), 1000);
         } else {
@@ -284,9 +289,49 @@ function updateAddressField() {
     buildAddressFromFields();
 }
 
+// Enable/disable save button based on password field
+function updateSaveButtonState() {
+    const passwordField = document.getElementById('verifyPassword');
+    const saveButton = document.getElementById('saveAccountBtn');
+    
+    if (passwordField && saveButton) {
+        if (passwordField.value.trim().length > 0) {
+            saveButton.disabled = false;
+        } else {
+            saveButton.disabled = true;
+        }
+    }
+}
+
+// Ensure all editable fields are enabled
+function enableEditableFields() {
+    // Enable full name field
+    const fullNameField = document.getElementById('fullName');
+    if (fullNameField) {
+        fullNameField.removeAttribute('readonly');
+        fullNameField.removeAttribute('disabled');
+    }
+    
+    // Enable address fields
+    const addressFields = ['addressStreet', 'addressCity', 'addressState', 'addressZip'];
+    addressFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.removeAttribute('readonly');
+            field.removeAttribute('disabled');
+        }
+    });
+}
+
 // Load account info on page load
 window.addEventListener('DOMContentLoaded', function() {
+    // Enable all editable fields first
+    enableEditableFields();
+    
     loadAccountInfo();
+    
+    // Re-enable editable fields after loading (in case loadAccountInfo disabled them)
+    setTimeout(enableEditableFields, 100);
     
     // Add event listeners to address fields
     const streetInput = document.getElementById('addressStreet');
@@ -303,6 +348,17 @@ window.addEventListener('DOMContentLoaded', function() {
         });
     }
     if (zipInput) zipInput.addEventListener('input', updateAddressField);
+    
+    // Add event listener to password field to enable/disable save button
+    const passwordField = document.getElementById('verifyPassword');
+    if (passwordField) {
+        passwordField.addEventListener('input', updateSaveButtonState);
+        passwordField.addEventListener('keyup', updateSaveButtonState);
+        passwordField.addEventListener('change', updateSaveButtonState);
+    }
+    
+    // Initialize save button state
+    updateSaveButtonState();
     
     // Update navigation buttons
     if (isLoggedIn()) {

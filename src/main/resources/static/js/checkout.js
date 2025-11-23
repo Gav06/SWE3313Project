@@ -46,9 +46,8 @@ async function loadOrderSummary() {
 // Format card number with spaces (only digits)
 document.getElementById('cardNumber')?.addEventListener('input', function(e) {
     let value = e.target.value.replace(/\s/g, '').replace(/\D/g, ''); // Remove spaces and non-digits
-    // Limit length based on card type (max 16 for most cards, 15 for Amex)
-    const cardType = document.getElementById('cardType').value;
-    const maxLength = cardType === 'American Express' ? 15 : 16;
+    // Limit length to 16 digits for Visa and Mastercard
+    const maxLength = 16;
     value = value.substring(0, maxLength);
     let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
     e.target.value = formatted;
@@ -64,37 +63,28 @@ document.getElementById('cardExpiry')?.addEventListener('input', function(e) {
     e.target.value = value;
 });
 
-// Format CVV (only digits, length based on card type)
+// Format CVV (only digits, 3 digits for Visa and Mastercard)
 document.getElementById('cardCVV')?.addEventListener('input', function(e) {
     let value = e.target.value.replace(/\D/g, ''); // Only digits
-    const cardType = document.getElementById('cardType').value;
-    const maxLength = cardType === 'American Express' ? 4 : 3;
+    const maxLength = 3;
     value = value.substring(0, maxLength);
     e.target.value = value;
 });
 
-// Update CVV max length when card type changes
+// Update CVV when card type changes (both Visa and Mastercard use 3 digits)
 document.getElementById('cardType')?.addEventListener('change', function(e) {
     const cardType = e.target.value;
     const cvvInput = document.getElementById('cardCVV');
     const cvvHint = document.getElementById('cvv-hint');
-    if (cvvInput) {
-        if (cardType === 'American Express') {
-            cvvInput.maxLength = 4;
-            cvvInput.minLength = 4;
-            cvvInput.placeholder = '1234';
-            cvvInput.pattern = '\\d{4}';
-            if (cvvHint) cvvHint.textContent = '4 digits for American Express';
-        } else if (cardType) {
-            cvvInput.maxLength = 3;
-            cvvInput.minLength = 3;
-            cvvInput.placeholder = '123';
-            cvvInput.pattern = '\\d{3}';
-            if (cvvHint) cvvHint.textContent = '3 digits for ' + cardType;
-            // Limit current value if needed
-            if (cvvInput.value.length > 3) {
-                cvvInput.value = cvvInput.value.substring(0, 3);
-            }
+    if (cvvInput && cardType) {
+        cvvInput.maxLength = 3;
+        cvvInput.minLength = 3;
+        cvvInput.placeholder = '123';
+        cvvInput.pattern = '\\d{3}';
+        if (cvvHint) cvvHint.textContent = '3 digits for ' + cardType;
+        // Limit current value if needed
+        if (cvvInput.value.length > 3) {
+            cvvInput.value = cvvInput.value.substring(0, 3);
         }
     }
 });
@@ -159,8 +149,9 @@ async function processCheckout() {
     hideGlobalError();
 
     if (!isLoggedIn()) {
-        showGlobalError('Please login to checkout');
-        window.location.href = 'loginpage.html';
+        showError('Please login to checkout', function() {
+            window.location.href = 'loginpage.html';
+        });
         return;
     }
 
@@ -188,21 +179,14 @@ async function processCheckout() {
         return;
     }
     
-    // Validate card number length based on card type
-    let expectedCardLength;
-    switch(cardType) {
-        case 'Visa':
-        case 'Mastercard':
-        case 'Discover':
-            expectedCardLength = 16;
-            break;
-        case 'American Express':
-            expectedCardLength = 15;
-            break;
-        default:
-            expectedCardLength = 16;
+    // Validate card type is only Visa or Mastercard
+    if (cardType !== 'Visa' && cardType !== 'Mastercard') {
+        showGlobalError('Only Visa and Mastercard are accepted');
+        return;
     }
     
+    // Validate card number length (both Visa and Mastercard are 16 digits)
+    const expectedCardLength = 16;
     if (cardNumber.length !== expectedCardLength) {
         showGlobalError(`Card number must be ${expectedCardLength} digits for ${cardType}`);
         return;
@@ -231,62 +215,88 @@ async function processCheckout() {
         return;
     }
     
-    // CVV length validation (3 for most cards, 4 for Amex)
-    const expectedCVVLength = cardType === 'American Express' ? 4 : 3;
+    // CVV length validation (3 digits for Visa and Mastercard)
+    const expectedCVVLength = 3;
     if (cardCVV.length !== expectedCVVLength) {
         showGlobalError(`CVV must be ${expectedCVVLength} digits for ${cardType}`);
         return;
     }
     
-    // Get delivery address - check that it's filled with correct format
+    // Get order type
+    const orderTypeRadio = document.querySelector('input[name="orderType"]:checked');
+    if (!orderTypeRadio) {
+        showGlobalError('Please select delivery or pickup');
+        return;
+    }
+    const orderType = orderTypeRadio.value;
+
+    // Get delivery address - check if using saved address
+    const useSavedAddress = document.getElementById('useSavedAddress')?.checked || false;
     let deliveryAddress = document.getElementById('deliveryAddress').value.trim();
-    const street = document.getElementById('streetAddress')?.value.trim() || '';
-    const city = document.getElementById('city')?.value.trim() || '';
-    const state = document.getElementById('state')?.value.trim() || '';
-    const zip = document.getElementById('zipCode')?.value.trim() || '';
     
-    // Validate state (must be 2 characters)
-    if (!state || state.length === 0) {
-        showGlobalError('Please enter a state');
-        return;
-    }
-    if (state.length !== 2) {
-        showGlobalError('State must be 2 characters (e.g., NY, CA)');
-        return;
-    }
-    
-    // Validate ZIP code (must be 5 digits minimum)
-    if (!zip || zip.length === 0) {
-        showGlobalError('Please enter a ZIP code');
-        return;
-    }
-    // Allow ZIP+4 format (5 digits or 5-4 digits)
-    if (!/^\d{5}(-\d{4})?$/.test(zip)) {
-        showGlobalError('ZIP code must be 5 digits (e.g., 10001 or 10001-1234)');
-        return;
-    }
-    
-    // Validate street address
-    if (!street || street.length === 0) {
-        showGlobalError('Please enter a street address');
-        return;
-    }
-    
-    // Validate city
-    if (!city || city.length === 0) {
-        showGlobalError('Please enter a city');
-        return;
-    }
-    
-    // Build delivery address from individual fields
-    if (!deliveryAddress) {
-        if (street && city && state && zip) {
-            deliveryAddress = [street, city, state, zip].filter(part => part).join(', ');
+    if (useSavedAddress) {
+        // Using saved address - just validate that deliveryAddress field is filled
+        if (!deliveryAddress || deliveryAddress.length === 0) {
+            showGlobalError('Please select a saved address or enter an address manually');
+            return;
+        }
+    } else {
+        // Using manual entry - validate all individual fields
+        const street = document.getElementById('streetAddress')?.value.trim() || '';
+        const city = document.getElementById('city')?.value.trim() || '';
+        const state = document.getElementById('state')?.value.trim() || '';
+        const zip = document.getElementById('zipCode')?.value.trim() || '';
+        
+        // Validate state (must be 2 characters)
+        if (!state || state.length === 0) {
+            showGlobalError('Please enter a state');
+            return;
+        }
+        if (state.length !== 2) {
+            showGlobalError('State must be 2 characters (e.g., NY, CA)');
+            return;
+        }
+        
+        // Validate ZIP code (must be 5 digits minimum)
+        if (!zip || zip.length === 0) {
+            showGlobalError('Please enter a ZIP code');
+            return;
+        }
+        // Allow ZIP+4 format (5 digits or 5-4 digits)
+        if (!/^\d{5}(-\d{4})?$/.test(zip)) {
+            showGlobalError('ZIP code must be 5 digits (e.g., 10001 or 10001-1234)');
+            return;
+        }
+        
+        // Validate street address
+        if (!street || street.length === 0) {
+            showGlobalError('Please enter a street address');
+            return;
+        }
+        
+        // Validate city
+        if (!city || city.length === 0) {
+            showGlobalError('Please enter a city');
+            return;
+        }
+        
+        // Build delivery address from individual fields
+        if (!deliveryAddress) {
+            if (street && city && state && zip) {
+                deliveryAddress = [street, city, state, zip].filter(part => part).join(', ');
+            }
+        }
+        
+        if (!deliveryAddress || deliveryAddress.length === 0) {
+            showGlobalError('Please enter a complete delivery address');
+            return;
         }
     }
     
-    if (!deliveryAddress || deliveryAddress.length === 0) {
-        showGlobalError('Please enter a complete delivery address');
+    // Validate signature field (required before order confirmation)
+    const signature = document.getElementById('customerSignature')?.value.trim() || '';
+    if (!signature || signature.length === 0) {
+        showGlobalError('Please sign the receipt by entering your name');
         return;
     }
 
@@ -306,22 +316,23 @@ async function processCheckout() {
                 userId: parseInt(getUserId()),
                 deliveryAddress: deliveryAddress,
                 cardType: cardType,
-                cardLast4: cardLast4
+                cardLast4: cardLast4,
+                orderType: orderType
             })
         });
 
         const result = await response.json();
         if (result.success) {
-            alert('Order placed successfully! Order ID: ' + result.orderId);
-            window.location.href = 'index.html';
+            // Redirect to receipt page with order ID
+            window.location.href = `receipt.html?orderId=${result.orderId}`;
         } else {
-            showGlobalError('Error: ' + result.message);
+            showError('Error: ' + result.message);
             checkoutBtn.disabled = false;
             checkoutBtn.textContent = 'Confirm Order';
         }
     } catch (error) {
         console.error('Error:', error);
-        showGlobalError('Failed to process checkout. Please try again.');
+        showError('Failed to process checkout. Please try again.');
         checkoutBtn.disabled = false;
         checkoutBtn.textContent = 'Confirm Order';
     }
@@ -367,7 +378,7 @@ function toggleSavedAddress() {
 
     if (useSaved) {
         if (!savedAddressText || savedAddressText.trim() === '') {
-            alert('You don\'t have a saved address. Please add one in Account Settings or enter an address manually.');
+            showWarning('You don\'t have a saved address. Please add one in Account Settings or enter an address manually.');
             document.getElementById('useSavedAddress').checked = false;
             return;
         }
@@ -447,9 +458,7 @@ window.addEventListener('DOMContentLoaded', function() {
     
     // Update navigation buttons
     if (isLoggedIn()) {
-        const accountBtn = document.getElementById('accountBtn');
         const loginBtn = document.getElementById('loginBtn');
-        if (accountBtn) accountBtn.style.display = 'inline-block';
         if (loginBtn) loginBtn.textContent = 'Logout';
         if (loginBtn) loginBtn.onclick = function() {
             clearUserId();

@@ -38,6 +38,9 @@ public class Order {
     @Column
     private String paymentCardLast4; // Last 4 digits for display
 
+    @Column
+    private String orderType; // "delivery" or "pickup"
+
     public Order() {
         this.orderDate = LocalDateTime.now();
         this.status = "pending";
@@ -121,6 +124,14 @@ public class Order {
 
     public void setPaymentCardLast4(String paymentCardLast4) {
         this.paymentCardLast4 = paymentCardLast4;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
     }
 }
 

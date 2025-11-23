@@ -48,6 +48,11 @@ public class CartService {
         MenuItem menuItem = menuItemRepository.findById(menuItemId)
                 .orElseThrow(() -> new RuntimeException("Menu item not found"));
 
+        // Check quantity limit of 25
+        if (quantity > 25) {
+            throw new RuntimeException("Order limit is 25 items per menu item");
+        }
+
         // For items with customizations, always create a new cart item
         // For items without customizations, check if item already in cart
         if (customizations == null || customizations.isEmpty()) {
@@ -58,7 +63,11 @@ public class CartService {
 
             if (existingItem.isPresent()) {
                 CartItem item = existingItem.get();
-                item.setQuantity(item.getQuantity() + quantity);
+                int newQuantity = item.getQuantity() + quantity;
+                if (newQuantity > 25) {
+                    throw new RuntimeException("Order limit is 25 items per menu item. Current quantity: " + item.getQuantity());
+                }
+                item.setQuantity(newQuantity);
                 cartItemRepository.save(item);
                 return;
             }
@@ -85,6 +94,10 @@ public class CartService {
         if (quantity <= 0) {
             cartItemRepository.delete(cartItem);
         } else {
+            // Check quantity limit of 25
+            if (quantity > 25) {
+                throw new RuntimeException("Order limit is 25 items per menu item");
+            }
             cartItem.setQuantity(quantity);
             cartItemRepository.save(cartItem);
         }

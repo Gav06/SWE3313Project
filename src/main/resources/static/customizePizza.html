@@ -150,33 +150,41 @@
         }
         .add-to-cart-btn {
             flex: 1;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 20px;
+            border: 2px outset #d32f2f;
+            color: black;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
             cursor: pointer;
-            border-radius: 4px;
+            background-color: white;
             transition: background-color 0.3s;
+            white-space: nowrap;
+            border-radius: 5px;
             font-family: 'Gabriola', 'Cormorant Garamond', serif;
         }
         .add-to-cart-btn:hover {
-            background-color: #45a049;
+            background-color: #f0f0f0;
         }
         .cancel-btn {
             flex: 1;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 20px;
+            border: 2px outset #d32f2f;
+            color: black;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
             cursor: pointer;
-            border-radius: 4px;
+            background-color: white;
             transition: background-color 0.3s;
+            white-space: nowrap;
+            border-radius: 5px;
             font-family: 'Gabriola', 'Cormorant Garamond', serif;
         }
         .cancel-btn:hover {
-            background-color: #d32f2f;
+            background-color: #f0f0f0;
         }
         .loading {
             text-align: center;
@@ -201,6 +209,7 @@
         <div class="loading">Loading pizza details...</div>
     </div>
 
+    <script src="js/modal.js"></script>
     <script src="js/app.js"></script>
     <script src="js/navigation.js"></script>
     <script>
@@ -210,6 +219,7 @@
         
         let pizzaItem = null;
         const customizations = {
+            size: 'medium',
             sauce: 'marinara',
             crust: 'regular',
             toppings: {}
@@ -252,7 +262,29 @@
                 <div class="pizza-info">
                     <h2>${pizzaItem.name}</h2>
                     <p>${pizzaItem.description}</p>
-                    <div class="price">Base Price: ${formatPrice(pizzaItem.price)}</div>
+                    <div class="price" id="pizza-price">Price: ${formatPrice(calculatePriceForSize(pizzaItem.price, customizations.size))} (${customizations.size.charAt(0).toUpperCase() + customizations.size.slice(1).replace('-', ' ')})</div>
+                </div>
+
+                <div class="customization-section">
+                    <h3>Size</h3>
+                    <div class="option-group">
+                        <label class="option-item ${customizations.size === 'small' ? 'selected' : ''}">
+                            <input type="radio" name="size" value="small" ${customizations.size === 'small' ? 'checked' : ''} onchange="updateSize('small')">
+                            Small
+                        </label>
+                        <label class="option-item ${customizations.size === 'medium' ? 'selected' : ''}">
+                            <input type="radio" name="size" value="medium" ${customizations.size === 'medium' ? 'checked' : ''} onchange="updateSize('medium')">
+                            Medium
+                        </label>
+                        <label class="option-item ${customizations.size === 'large' ? 'selected' : ''}">
+                            <input type="radio" name="size" value="large" ${customizations.size === 'large' ? 'checked' : ''} onchange="updateSize('large')">
+                            Large
+                        </label>
+                        <label class="option-item ${customizations.size === 'extra-large' ? 'selected' : ''}">
+                            <input type="radio" name="size" value="extra-large" ${customizations.size === 'extra-large' ? 'checked' : ''} onchange="updateSize('extra-large')">
+                            Extra Large
+                        </label>
+                    </div>
                 </div>
 
                 <div class="customization-section">
@@ -298,13 +330,6 @@
                                            onchange="toggleTopping('${topping}')">
                                     ${topping.charAt(0).toUpperCase() + topping.slice(1)}
                                 </label>
-                                ${customizations.toppings[topping] ? `
-                                    <div class="quantity-control">
-                                        <button class="quantity-btn" onclick="adjustToppingQuantity('${topping}', -1)">-</button>
-                                        <span class="quantity-display">${customizations.toppings[topping]}</span>
-                                        <button class="quantity-btn" onclick="adjustToppingQuantity('${topping}', 1)">+</button>
-                                    </div>
-                                ` : ''}
                             </div>
                         `).join('')}
                     </div>
@@ -315,6 +340,38 @@
                     <button class="add-to-cart-btn" onclick="addCustomizedPizzaToCart()">Add to Cart</button>
                 </div>
             `;
+        }
+
+        function calculatePriceForSize(basePrice, size) {
+            const adjustments = {
+                'small': -2.00,
+                'medium': 0.00,
+                'large': 2.00,
+                'extra-large': 4.00
+            };
+            return parseFloat(basePrice) + (adjustments[size] || 0);
+        }
+
+        function updatePriceDisplay() {
+            if (!pizzaItem) return;
+            const currentPrice = calculatePriceForSize(pizzaItem.price, customizations.size);
+            const priceElement = document.querySelector('.pizza-info .price');
+            if (priceElement) {
+                priceElement.textContent = `Price: ${formatPrice(currentPrice)} (${customizations.size.charAt(0).toUpperCase() + customizations.size.slice(1).replace('-', ' ')})`;
+            }
+        }
+
+        function updateSize(size) {
+            customizations.size = size;
+            document.querySelectorAll('input[name="size"]').forEach(radio => {
+                const label = radio.closest('.option-item');
+                if (radio.value === size) {
+                    label.classList.add('selected');
+                } else {
+                    label.classList.remove('selected');
+                }
+            });
+            updatePriceDisplay();
         }
 
         function updateSauce(sauce) {
@@ -344,27 +401,29 @@
         function toggleTopping(topping) {
             const checkbox = event.target;
             if (checkbox.checked) {
-                customizations.toppings[topping] = 1;
+                customizations.toppings[topping] = true;
             } else {
                 delete customizations.toppings[topping];
             }
-            renderCustomizationPage();
-        }
-
-        function adjustToppingQuantity(topping, delta) {
-            if (!customizations.toppings[topping]) {
-                customizations.toppings[topping] = 1;
-            } else {
-                customizations.toppings[topping] = Math.max(1, customizations.toppings[topping] + delta);
-            }
-            renderCustomizationPage();
+            // Don't re-render, just update the checkbox state
         }
 
         async function addCustomizedPizzaToCart() {
             if (!requireLogin()) return;
 
             try {
+                // Calculate the price adjustment based on size
+                const sizeAdjustment = {
+                    'small': -2.00,
+                    'medium': 0.00,
+                    'large': 2.00,
+                    'extra-large': 4.00
+                }[customizations.size] || 0;
+
+                // Store the size adjustment in customizations
+                customizations.sizeAdjustment = sizeAdjustment;
                 const customizationsJson = JSON.stringify(customizations);
+                
                 const response = await fetch('/api/cart/add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -372,20 +431,22 @@
                         userId: parseInt(getUserId()),
                         menuItemId: parseInt(itemId),
                         quantity: 1,
-                        customizations: customizationsJson
+                        customizations: customizationsJson,
+                        priceAdjustment: sizeAdjustment
                     })
                 });
 
                 const result = await response.json();
                 if (result.success) {
-                    alert('Customized pizza added to cart!');
-                    window.location.href = 'cart.html';
+                    showSuccess('Customized pizza added to cart!', function() {
+                        window.location.href = 'cart.html';
+                    });
                 } else {
-                    alert('Error: ' + result.message);
+                    showError('Error: ' + result.message);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Failed to add pizza to cart');
+                showError('Failed to add pizza to cart');
             }
         }
 

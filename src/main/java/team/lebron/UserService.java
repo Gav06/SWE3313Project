@@ -18,7 +18,7 @@ public class UserService {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Transactional
-    public User registerUser(String username, String password, String email, String address) {
+    public User registerUser(String username, String password, String email, String address, String fullName, String phoneNumber) {
         if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Username already exists");
         }
@@ -31,6 +31,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(password));
         user.setEmail(email);
         user.setAddress(address);
+        user.setFullName(fullName);
+        user.setPhoneNumber(phoneNumber);
 
         user = userRepository.save(user);
 

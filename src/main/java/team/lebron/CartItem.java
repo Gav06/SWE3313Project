@@ -2,6 +2,8 @@ package team.lebron;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 
 @Entity
 @Table(name = "cart_items")
@@ -74,7 +76,29 @@ public class CartItem {
     }
 
     public BigDecimal getSubtotal() {
-        return menuItem.getPrice().multiply(BigDecimal.valueOf(quantity));
+        BigDecimal basePrice = menuItem.getPrice();
+        
+        // Check for price adjustment in customizations (for pizza sizes)
+        if (customizations != null && !customizations.isEmpty()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                @SuppressWarnings("unchecked")
+                Map<String, Object> customMap = mapper.readValue(customizations, Map.class);
+                
+                // Check for sizeAdjustment in customizations
+                if (customMap.containsKey("sizeAdjustment")) {
+                    Object adjustmentObj = customMap.get("sizeAdjustment");
+                    if (adjustmentObj instanceof Number) {
+                        BigDecimal adjustment = BigDecimal.valueOf(((Number) adjustmentObj).doubleValue());
+                        basePrice = basePrice.add(adjustment);
+                    }
+                }
+            } catch (Exception e) {
+                // If parsing fails, use base price
+            }
+        }
+        
+        return basePrice.multiply(BigDecimal.valueOf(quantity));
     }
 }
 

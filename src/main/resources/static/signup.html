@@ -28,8 +28,21 @@
             padding: 40px;
             border: 3px solid red;
             border-radius: 8px;
-            max-width: 400px;
+            max-width: 500px;
             width: 100%;
+        }
+        .step-indicator {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .step-content {
+            display: none;
+        }
+        .step-content.active {
+            display: block;
         }
         form {
             display: flex;
@@ -41,11 +54,32 @@
             font-weight: bold;
             color: #333;
         }
-        input {
+        input, select {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .address-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .address-grid-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-size: 14px;
+            margin-top: 0;
         }
         button {
             margin-top: 20px;
@@ -61,6 +95,10 @@
         }
         button:hover {
             background-color: #b71c1c;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
         .button {
             border: 2px outset #d32f2f;
@@ -80,15 +118,37 @@
         .button:hover {
             background-color: #f0f0f0;
         }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .button-group button {
+            flex: 1;
+        }
         #error {
             color: red;
             margin-top: 15px;
             display: none;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
         }
         #success {
             color: green;
             margin-top: 15px;
             display: none;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+        }
+        .error-message {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
         }
     </style>
 </head>
@@ -98,98 +158,333 @@
             <h1>Piero's Pizzeria</h1>
             <h2>Sign Up</h2>
         </div>
-        <form onsubmit="handleSignup(event)">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+        <div class="step-indicator">
+            <span id="stepText">Step 1 of 2</span>
+        </div>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+        <!-- Step 1: Name, Username, Password, Email -->
+        <div id="step1" class="step-content active">
+            <form onsubmit="handleStep1(event)">
+                <label for="fullName">Full Name *</label>
+                <input type="text" id="fullName" name="fullName" required placeholder="Enter your full name (e.g., John Doe)">
+                <div class="error-message" id="fullNameError"></div>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" required placeholder="Choose a username">
+                <div class="error-message" id="usernameError"></div>
 
-            <label for="confirmPassword">Confirm Password:</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email address">
+                <div class="error-message" id="emailError"></div>
 
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address" required placeholder="Enter your delivery address">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password (min 6 characters)">
+                <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">Password must be at least 6 characters long</small>
+                <div class="error-message" id="passwordError"></div>
 
-            <button type="submit">SIGN UP</button>
-            <button type="button" class="button" onclick="window.location.href='loginpage.html'">Already have an account? Login</button>
-            <button type="button" class="button" onclick="window.location.href='index.html'">Back to Home</button>
+                <label for="confirmPassword">Confirm Password *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password">
+                <div class="error-message" id="confirmPasswordError"></div>
 
-            <div id="error"></div>
-            <div id="success"></div>
-        </form>
+                <button type="submit">Next: Add Contact & Address</button>
+                <button type="button" class="button" onclick="window.location.href='loginpage.html'">Already have an account? Login</button>
+                <button type="button" class="button" onclick="window.location.href='index.html'">Back to Home</button>
+            </form>
+        </div>
+
+        <!-- Step 2: Phone Number and Address -->
+        <div id="step2" class="step-content">
+            <form onsubmit="handleStep2(event)">
+                <label for="phoneNumber">Phone Number *</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required placeholder="Enter your phone number">
+                <div class="error-message" id="phoneNumberError"></div>
+
+                <label style="margin-top: 20px;">Address *</label>
+                
+                <div class="form-group">
+                    <label for="addressStreet">Street Address</label>
+                    <input type="text" id="addressStreet" required placeholder="123 Main Street, Apt 4B">
+                    <div class="error-message" id="addressStreetError"></div>
+                </div>
+
+                <div class="address-grid-3">
+                    <div class="form-group">
+                        <label for="addressCity">City</label>
+                        <input type="text" id="addressCity" required placeholder="New York">
+                        <div class="error-message" id="addressCityError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="addressState">State</label>
+                        <input type="text" id="addressState" required placeholder="NY" maxlength="2" style="text-transform: uppercase;">
+                        <div class="error-message" id="addressStateError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="addressZip">ZIP Code</label>
+                        <input type="text" id="addressZip" required placeholder="10001" maxlength="10" pattern="^\d{5}(-\d{4})?$">
+                        <div class="error-message" id="addressZipError"></div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="goToStep1()" style="background-color: #757575;">Back</button>
+                    <button type="submit">Complete Registration</button>
+                </div>
+                <div id="error"></div>
+                <div id="success"></div>
+            </form>
+        </div>
     </div>
 
     <script>
-        async function handleSignup(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const address = document.getElementById('address').value;
+        let step1Data = {};
 
-            hideMessages();
+        function hideAllErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.classList.remove('show');
+                el.textContent = '';
+            });
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
+        }
 
-            if (!username || !email || !password || !confirmPassword || !address) {
-                showError("All fields are required");
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showError("Passwords do not match");
-                return;
-            }
-
-            if (password.length < 6) {
-                showError("Password must be at least 6 characters long");
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, password, address })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    showSuccess("Registration successful! Redirecting to login...");
-                    setTimeout(() => {
-                        window.location.href = 'loginpage.html';
-                    }, 2000);
-                } else {
-                    showError(result.message || "Registration failed. Please try again.");
-                }
-            } catch (error) {
-                showError("Registration unavailable. Please try again later.");
-                console.error(error);
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.add('show');
             }
         }
 
-        function showError(message) {
+        function hideError(elementId) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.classList.remove('show');
+            }
+        }
+
+        function showGlobalError(message) {
             const errorDiv = document.getElementById('error');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
             document.getElementById('success').style.display = 'none';
         }
 
-        function showSuccess(message) {
+        function showGlobalSuccess(message) {
             const successDiv = document.getElementById('success');
             successDiv.textContent = message;
             successDiv.style.display = 'block';
             document.getElementById('error').style.display = 'none';
         }
 
-        function hideMessages() {
-            document.getElementById('error').style.display = 'none';
-            document.getElementById('success').style.display = 'none';
+        function handleStep1(event) {
+            event.preventDefault();
+            hideAllErrors();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            let isValid = true;
+
+            if (!fullName) {
+                showError('fullNameError', 'Full name is required');
+                isValid = false;
+            } else {
+                hideError('fullNameError');
+            }
+
+            if (!username) {
+                showError('usernameError', 'Username is required');
+                isValid = false;
+            } else {
+                hideError('usernameError');
+            }
+
+            if (!email) {
+                showError('emailError', 'Email is required');
+                isValid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('emailError', 'Please enter a valid email address');
+                isValid = false;
+            } else {
+                hideError('emailError');
+            }
+
+            if (!password) {
+                showError('passwordError', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError('passwordError', 'Password must be at least 6 characters long');
+                isValid = false;
+            } else {
+                hideError('passwordError');
+            }
+
+            if (!confirmPassword) {
+                showError('confirmPasswordError', 'Please confirm your password');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showError('confirmPasswordError', 'Passwords do not match');
+                isValid = false;
+            } else {
+                hideError('confirmPasswordError');
+            }
+
+            if (!isValid) {
+                showGlobalError('Please fix the errors above');
+                return;
+            }
+
+            // Store step 1 data and move to step 2
+            step1Data = { fullName, username, email, password };
+            goToStep2();
         }
+
+        function goToStep2() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+            document.getElementById('stepText').textContent = 'Step 2 of 2';
+            hideAllErrors();
+        }
+
+        function goToStep1() {
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('stepText').textContent = 'Step 1 of 2';
+            hideAllErrors();
+        }
+
+        function buildAddress() {
+            const street = document.getElementById('addressStreet').value.trim();
+            const city = document.getElementById('addressCity').value.trim();
+            const state = document.getElementById('addressState').value.trim().toUpperCase();
+            const zip = document.getElementById('addressZip').value.trim();
+
+            if (street && city && state && zip) {
+                return `${street}, ${city}, ${state} ${zip}`;
+            }
+            return null;
+        }
+
+        async function handleStep2(event) {
+            event.preventDefault();
+            hideAllErrors();
+
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const addressStreet = document.getElementById('addressStreet').value.trim();
+            const addressCity = document.getElementById('addressCity').value.trim();
+            const addressState = document.getElementById('addressState').value.trim().toUpperCase();
+            const addressZip = document.getElementById('addressZip').value.trim();
+
+            let isValid = true;
+
+            if (!phoneNumber) {
+                showError('phoneNumberError', 'Phone number is required');
+                isValid = false;
+            } else {
+                hideError('phoneNumberError');
+            }
+
+            if (!addressStreet) {
+                showError('addressStreetError', 'Street address is required');
+                isValid = false;
+            } else {
+                hideError('addressStreetError');
+            }
+
+            if (!addressCity) {
+                showError('addressCityError', 'City is required');
+                isValid = false;
+            } else {
+                hideError('addressCityError');
+            }
+
+            if (!addressState) {
+                showError('addressStateError', 'State is required');
+                isValid = false;
+            } else if (addressState.length !== 2) {
+                showError('addressStateError', 'State must be 2 letters (e.g., NY, CA)');
+                isValid = false;
+            } else {
+                hideError('addressStateError');
+            }
+
+            if (!addressZip) {
+                showError('addressZipError', 'ZIP code is required');
+                isValid = false;
+            } else if (!/^\d{5}(-\d{4})?$/.test(addressZip)) {
+                showError('addressZipError', 'Please enter a valid ZIP code (e.g., 10001 or 10001-1234)');
+                isValid = false;
+            } else {
+                hideError('addressZipError');
+            }
+
+            if (!isValid) {
+                showGlobalError('Please fix the errors above');
+                return;
+            }
+
+            // Build full address
+            const address = buildAddress();
+            if (!address) {
+                showGlobalError('Please enter a complete address');
+                return;
+            }
+
+            // Combine step 1 and step 2 data
+            const registrationData = {
+                ...step1Data,
+                phoneNumber,
+                address
+            };
+
+            // Disable submit button
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registering...';
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(registrationData)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showGlobalSuccess('Registration successful! Redirecting to login...');
+                    // Clear stored data
+                    step1Data = {};
+                    setTimeout(() => {
+                        window.location.href = 'loginpage.html';
+                    }, 2000);
+                } else {
+                    showGlobalError(result.message || 'Registration failed. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            } catch (error) {
+                showGlobalError('Registration unavailable. Please try again later.');
+                console.error(error);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        }
+
+        // Auto-uppercase state field
+        document.addEventListener('DOMContentLoaded', function() {
+            const stateInput = document.getElementById('addressState');
+            if (stateInput) {
+                stateInput.addEventListener('input', function(e) {
+                    e.target.value = e.target.value.toUpperCase();
+                });
+            }
+        });
     </script>
 </body>
 </html>
-
