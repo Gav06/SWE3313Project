@@ -11,3 +11,5 @@ You can check with command: java -version
 Once you execute the jar file and launch the application, go into your web browser and enter localhost:8080 in the address bar to use the application interface.
 
 You can use username: tdelane1 password: delaney or create your own account to use the site.
+
+Timesheet: https://kennesawedu-my.sharepoint.com/:x:/g/personal/gconley5_students_kennesaw_edu/ETMmu8yAxCJGhOifSOKAVxUB_IoIT0YVcoIckFnoBOjIwg?e=rb22mm
